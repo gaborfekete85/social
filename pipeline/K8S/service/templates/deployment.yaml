@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "service.fullname" . }}
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "service.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "service.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env: 
+            - name: REACT_APP_CONTEXT_PATH
+              value: {{ .Values.REACT_APP_CONTEXT_PATH }}
+            - name: REACT_APP_SERVER_URL
+              value: {{ .Values.REACT_APP_SERVER_URL }}
+            - name: DATASOURCE_URL
+              value: {{ .Values.DATASOURCE_URL }}
+            - name: DATASOURCE_USER
+              value: {{ .Values.DATASOURCE_USER }}
+            - name: DATASOURCE_PASSWORD
+              value: {{ .Values.DATASOURCE_PASSWORD }}
+            - name: AUTH_SERVICE_ENDPOINT
+              value: {{ .Values.AUTH_SERVICE_ENDPOINT }}
+            - name: ZIPKIN_BASE_URL
+              value: {{ .Values.ZIPKIN_BASE_URL }}
+          ports:
+            - name: debug
+              containerPort: {{ .Values.containers.debugContainerPort }}
+              protocol: TCP
+            - name: http
+              containerPort: {{ .Values.containers.containerPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

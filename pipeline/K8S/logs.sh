@@ -1,0 +1,1 @@
+kubectl logs `kubectl get pods -n udemy | grep $1 | awk '{ printf  "%10s\n", $1 }'` -n config -f

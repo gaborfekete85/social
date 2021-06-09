@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-ingress-oauth
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /oauth2/$2
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  rules:
+  - http:
+      paths:
+        - path: /oauth2(/|$)(.*)
+          backend:
+            serviceName: security-ui-service
+            servicePort: 8200

@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-ingress-ui-static
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /static/$2
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - http:
+      paths:
+        - path: /static(/|$)(.*)
+          backend:
+            serviceName: security-ui-service
+            servicePort: 8200
