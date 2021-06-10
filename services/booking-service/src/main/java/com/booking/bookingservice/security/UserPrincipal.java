@@ -1,38 +1,41 @@
-package com.example.springsocial.security;
+package com.booking.bookingservice.security;
 
-import com.example.springsocial.model.User;
+import com.booking.bookingservice.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class UserPrincipal implements OAuth2User, UserDetails {
-    private Long id;
+public class UserPrincipal implements UserDetails {
+    private UUID userId;
     private String email;
     private String password;
+    private final String name;
+    private final Boolean emailVerified;
+
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
+    public UserPrincipal(UUID userId, String email, String password, String name, Boolean emailVerified, Collection<? extends GrantedAuthority> authorities) {
+        this.userId = userId;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
+        this.name = name;
+        this.emailVerified = emailVerified;
     }
 
     public static UserPrincipal create(User user) {
-//        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER, ROLE_MODERATOR, ROLE_ADMIN"));
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_MODERATOR"), new SimpleGrantedAuthority("ROLE_ADMIN"));
+        List<GrantedAuthority> authorities = user.getRoles().stream().map(x -> x.getName().name()).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
         return new UserPrincipal(
-                user.getId(),
+                user.getUserId(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getName(),
+                user.getEmailVerified(),
                 authorities
         );
     }
@@ -43,8 +46,8 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         return userPrincipal;
     }
 
-    public Long getId() {
-        return id;
+    public UUID getUserId() {
+        return userId;
     }
 
     public String getEmail() {
@@ -78,7 +81,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return emailVerified;
     }
 
     @Override
@@ -86,7 +89,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         return authorities;
     }
 
-    @Override
     public Map<String, Object> getAttributes() {
         return attributes;
     }
@@ -95,8 +97,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         this.attributes = attributes;
     }
 
-    @Override
     public String getName() {
-        return String.valueOf(id);
+        return name;
     }
 }

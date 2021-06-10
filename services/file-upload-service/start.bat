@@ -1,0 +1,1 @@
+set "AUTH_SERVICE_ENDPOINT=http://localhost:8082" && node index.js

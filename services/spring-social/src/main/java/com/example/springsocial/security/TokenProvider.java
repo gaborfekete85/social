@@ -30,6 +30,9 @@ public class TokenProvider {
                 .setSubject(Long.toString(userPrincipal.getId()))
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
+                .claim("authorities", userPrincipal.getAuthorities())
+                .claim("emailVerified", userPrincipal.isEnabled())
+                .setIssuer(userPrincipal.getEmail())
                 .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
                 .compact();
     }
