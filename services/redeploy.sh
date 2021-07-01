@@ -49,9 +49,9 @@ function buildService() {
 function deployService() {
 	echo "Deploying $1"
 	echo "Deploying chart name $3"
-	helm delete $1 -n config
+	helm delete $1 -n social
 	helm install -f ../pipeline/K8S/service/values-$service.yaml --set image.tag=0.0.1-SNAPSHOT --set image.repository=$2/$1 \
-				 $3 ../pipeline/K8S/service -n config
+				 $3 ../pipeline/K8S/service -n social
 }
 
 for service in "${services[@]}"; do

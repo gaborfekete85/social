@@ -23,14 +23,14 @@ spring:
           google:
             clientId: ${GOOGLE_CLIENT_ID:912050282042-ais7fbu2uns1u3go9eoe6l8iaiv3iruo.apps.googleusercontent.com}
             clientSecret: ${GOOGLE_CLIENT_SECRET:5Ex-92yP7Q1YU_TmgtVXiYR5}
-            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}" # Registered in facebook developer portal: https://cloudbookings.com/oauth2/callback
+            redirectUri: "https://cloudbookings.com/oauth2/callback/{registrationId}" # Registered in Google developer portal: https://cloudbookings.com/oauth2/callback/google
             scope:
               - email
               - profile
           facebook:
             clientId: ${FACEBOOK_CLIENT_ID:1670650839666976}
             clientSecret: ${FACEBOOK_CLIENT_SECRET:97e1e2cfb217a1730563ad1361bda51c}
-            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}" # Registered in Google developer portal: https://cloudbookings.com/oauth2/callback/google
+            redirectUri: "https://cloudbookings.com/oauth2/callback/{registrationId}" # Registered in Facebook developer portal: https://cloudbookings.com/oauth2/callback
             scope:
               - email
               - public_profile
@@ -59,7 +59,10 @@ app:
     # This URL goes back to the FE
     authorizedRedirectUris:
       - https://cloudbookings.com/oauth2/redirect
+      - http://cloudbookings.com/oauth2/redirect
       - http://localhost/oauth2/redirect
       - http://localhost:8100/oauth2/redirect
+      - http://localhost:8102/oauth2/redirect
+      - http://localhost:8102/oauth2/redirect
       - myandroidapp://oauth2/redirect
       - myiosapp://oauth2/redirect
