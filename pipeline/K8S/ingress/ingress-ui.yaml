@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: nginx-ingress-ui-prefixed
+  name: social-nginx-ingress-crime-ui
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     kubernetes.io/ingress.class: nginx
@@ -12,10 +12,5 @@ spec:
           - path: /
             pathType: ImplementationSpecific
             backend:
-              serviceName: security-ui-service
-              servicePort: 8200
-          - path: /oauth2
-            pathType: ImplementationSpecific
-            backend:
-              serviceName: security-ui-service
-              servicePort: 8200
+              serviceName: spring-social-ui-service
+              servicePort: 8101

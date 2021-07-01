@@ -1,8 +1,11 @@
 #/bin/bash
 repository="localhost:5000"
 build="false"
-services=(config-service)
+tag=`git rev-parse --short HEAD`
+services=(spring-social)
 name="default"
+namespace="social"
+env="dev"
 while (( "$#" )); do
     case $1 in
         -s | --services)
@@ -17,6 +20,18 @@ while (( "$#" )); do
         ;;
         -n | --name)
 			name=$2
+			shift
+        ;;
+        -ns | --namespace)
+			namespace=$2
+			shift
+        ;;
+        -t | --tag)
+			tag=$2
+			shift
+        ;;
+        -e | --env)
+			env=$2
 			shift
         ;;
     esac
@@ -48,10 +63,10 @@ function buildService() {
 
 function deployService() {
 	echo "Deploying $1"
-	echo "Deploying chart name $3"
-	helm delete $1 -n social
-	helm install -f ../pipeline/K8S/service/values-$service.yaml --set image.tag=0.0.1-SNAPSHOT --set image.repository=$2/$1 \
-				 $3 ../pipeline/K8S/service -n social
+	echo "Deploying chart name $3 $5"
+	helm delete $1 -n $4
+	helm install -f ../pipeline/K8S/service/values-$6-$service.yaml --set image.tag=$5 --set image.repository=$2/$1 \
+				 $3 ../pipeline/K8S/service -n $4
 }
 
 for service in "${services[@]}"; do
@@ -65,7 +80,7 @@ for service in "${services[@]}"; do
 	else
 		helmChartRelease=$name
 	fi
-	deployService $service $repository $helmChartRelease 
+	deployService $service $repository $helmChartRelease $namespace $tag $env
 done
 
 #OPTIND=1
